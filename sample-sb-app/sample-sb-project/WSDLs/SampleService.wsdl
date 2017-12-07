@@ -1,0 +1,45 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="SampleService"
+     targetNamespace="http://xmlns.oracle.com/sample-sb-app/sample-sb-project/SampleService"
+     xmlns:tns="http://xmlns.oracle.com/sample-sb-app/sample-sb-project/SampleService"
+     xmlns:inp1="io.devgmz.osb"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:import namespace="io.devgmz.osb" schemaLocation="../XML-Schemas/Service.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="requestMessage">
+        <wsdl:part name="request" element="inp1:input"/>
+    </wsdl:message>
+    <wsdl:message name="replyMessage">
+        <wsdl:part name="response" element="inp1:output"/>
+    </wsdl:message>
+    <wsdl:portType name="SampleService_ptt">
+        <wsdl:operation name="getMessage">
+            <wsdl:input message="tns:requestMessage"/>
+            <wsdl:output message="tns:replyMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SampleService_bind" type="tns:SampleService_ptt">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="getMessage">
+            <soap:operation style="document" soapAction="getMessage"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://xmlns.oracle.com/sample-sb-app/sample-sb-project/SampleService"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://xmlns.oracle.com/sample-sb-app/sample-sb-project/SampleService"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="SampleService">
+        <wsdl:port name="SampleServicePort" binding="tns:SampleService_bind">
+            <soap:address location="http://www.example.com"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

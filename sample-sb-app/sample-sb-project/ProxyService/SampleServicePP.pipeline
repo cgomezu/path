@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:pipelineEntry xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+    <con:coreEntry>
+        <con:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType">
+            <con:wsdl ref="sample-sb-project/WSDLs/SampleService"/>
+            <con:binding>
+                <con:name>SampleService_bind</con:name>
+                <con:namespace>http://xmlns.oracle.com/sample-sb-app/sample-sb-project/SampleService</con:namespace>
+            </con:binding>
+        </con:binding>
+        <con:xqConfiguration>
+            <con:snippetVersion>1.0</con:snippetVersion>
+        </con:xqConfiguration>
+    </con:coreEntry>
+    <con:router>
+        <con:pipeline type="request" name="request-ad6125f.6d18c067.0.16031629694.N7f6f">
+            <con:stage id="_StageId-ad6125f.6d18c067.0.16031629694.N7f6d" name="Validate Request">
+                <con:context>
+                    <con1:userNsDecl prefix="io" namespace="io.devgmz.osb"/>
+                </con:context>
+                <con:actions>
+                    <con2:ifThenElse>
+                        <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f65</con1:id>
+                        <con2:case id="_BranchId-ad6125f.6d18c067.0.16031629694.N7f64">
+                            <con2:condition>
+                                <con1:xqueryText>not(fn:matches($body/io:input, '[a-zA-Z]*'))</con1:xqueryText>
+                            </con2:condition>
+                            <con2:actions>
+                                <con2:assign varName="validRequest">
+                                    <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f59</con1:id>
+                                    <con2:expr>
+                                        <con1:xqueryText>true()</con1:xqueryText>
+                                    </con2:expr>
+                                </con2:assign>
+                            </con2:actions>
+                        </con2:case>
+                        <con2:default>
+                            <con2:assign varName="validRequest">
+                                <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f56</con1:id>
+                                <con2:expr>
+                                    <con1:xqueryText>false()</con1:xqueryText>
+                                </con2:expr>
+                            </con2:assign>
+                        </con2:default>
+                    </con2:ifThenElse>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:pipeline type="response" name="response-ad6125f.6d18c067.0.16031629694.N7f6e">
+            <con:stage id="_StageId-ad6125f.6d18c067.0.16031629694.N7f6c" name="Transform Output">
+                <con:context>
+                    <con1:userNsDecl prefix="io" namespace="io.devgmz.osb"/>
+                </con:context>
+                <con:actions>
+                    <con2:ifThenElse>
+                        <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f5d</con1:id>
+                        <con2:case id="_BranchId-ad6125f.6d18c067.0.16031629694.N7f5c">
+                            <con2:condition>
+                                <con1:xqueryText>$validRequest</con1:xqueryText>
+                            </con2:condition>
+                            <con2:actions>
+                                <con2:replace varName="body" contents-only="true">
+                                    <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f53</con1:id>
+                                    <con2:location>
+                                        <con1:xpathText>.</con1:xpathText>
+                                    </con2:location>
+                                    <con2:expr>
+                                        <con1:xqueryTransform>
+                                            <con1:resource ref="sample-sb-project/Transformations/req_to_resp"/>
+                                            <con1:param name="input">
+                                                <con1:path>$body/io:input</con1:path>
+                                            </con1:param>
+                                        </con1:xqueryTransform>
+                                    </con2:expr>
+                                </con2:replace>
+                            </con2:actions>
+                        </con2:case>
+                        <con2:default>
+                            <con2:replace varName="body" contents-only="true">
+                                <con1:id>_ActionId-ad6125f.6d18c067.0.16031629694.N7f50</con1:id>
+                                <con2:location>
+                                    <con1:xpathText>.</con1:xpathText>
+                                </con2:location>
+                                <con2:expr>
+                                    <con1:xqueryTransform>
+                                        <con1:resource ref="sample-sb-project/Transformations/error_to_output"/>
+                                    </con1:xqueryTransform>
+                                </con2:expr>
+                            </con2:replace>
+                        </con2:default>
+                    </con2:ifThenElse>
+                </con:actions>
+            </con:stage>
+        </con:pipeline>
+        <con:flow>
+            <con:pipeline-node name="Pipeline Pair Node1">
+                <con:request>request-ad6125f.6d18c067.0.16031629694.N7f6f</con:request>
+                <con:response>response-ad6125f.6d18c067.0.16031629694.N7f6e</con:response>
+            </con:pipeline-node>
+        </con:flow>
+    </con:router>
+</con:pipelineEntry>
